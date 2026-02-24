@@ -1,0 +1,27 @@
+import sqlite3
+
+conn = sqlite3.connect("database.db")
+cur = conn.cursor()
+
+cur.execute("""
+CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    first_name TEXT NOT NULL,
+    last_name TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    mobile TEXT NOT NULL,
+    password TEXT NOT NULL,
+    role TEXT NOT NULL
+)
+""")
+
+# Create default admin
+cur.execute("""
+INSERT OR IGNORE INTO users 
+(email, password, role, first_name, last_name, mobile)
+VALUES ('admin@gmail.com','admin123','admin','Admin','User','0000000000')
+""")
+
+conn.commit()
+conn.close()
+print("Database ready")
