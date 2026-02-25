@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request, jsonify, redirect, session, url_for
-from werkzeug.security import generate_password_hash, check_password_hash
 from utils.db import get_db
 from werkzeug.utils import secure_filename
 import os
@@ -20,9 +19,7 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 # -------------------- INDEX / RANKING --------------------
 @app.route("/", methods=["GET", "POST"])
 def index():
-    # require login
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
+    # authentication removed — index is public now
     if request.method == "POST":
 
         job_desc = preprocess_text(request.form.get("job_desc"))
@@ -58,8 +55,7 @@ def login_required(f):
     from functools import wraps
     @wraps(f)
     def wrapped(*args, **kwargs):
-        if 'user_id' not in session:
-            return redirect(url_for('login'))
+        # authentication removed — allow access
         return f(*args, **kwargs)
     return wrapped
 
@@ -137,43 +133,11 @@ def interview():
     return render_template("interview.html", questions=questions)
 
 
-@app.route('/signup', methods=['GET', 'POST'])
-def signup():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        if not username or not password:
-            return render_template('signup.html', error='Missing username or password')
-        db = get_db()
-        try:
-            db.execute('INSERT INTO users (username, password_hash, created_at) VALUES (?, ?, ?)',
-                       (username, generate_password_hash(password), __import__('datetime').datetime.utcnow().isoformat()))
-            db.commit()
-        except Exception:
-            return render_template('signup.html', error='Username already exists')
-        return redirect(url_for('login'))
-    return render_template('signup.html')
-
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        db = get_db()
-        user = db.execute('SELECT * FROM users WHERE username = ?', (username,)).fetchone()
-        if user and check_password_hash(user['password_hash'], password):
-            session.clear()
-            session['user_id'] = user['id']
-            return redirect(url_for('index'))
-        return render_template('login.html', error='Invalid credentials')
-    return render_template('login.html')
-
-
 @app.route('/logout')
 def logout():
+    # keep logout but redirect to index now that auth is removed
     session.clear()
-    return redirect(url_for('login'))
+    return redirect(url_for('index'))
 
 
 @app.route('/submit_answers', methods=['POST'])

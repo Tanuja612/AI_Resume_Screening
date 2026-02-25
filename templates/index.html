@@ -1,178 +1,143 @@
 <!doctype html>
 <html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>AI Resume Screening</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        :root{--brand:#0d6efd}
-        body{background:#f7f9fc}
-        .upload-card{border-radius:12px;box-shadow:0 6px 18px rgba(16,24,40,.08)}
-        .dropzone{border:2px dashed rgba(13,110,253,.15);border-radius:10px;padding:28px;text-align:center;background:#fff}
-        .dropzone.dragover{border-color:var(--brand);background:#f0f6ff}
-        .result-badge{font-size:1.05rem}
-        .muted-small{font-size:.9rem;color:#6c757d}
-    </style>
-</head>
-<body>
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-12 text-end mb-3">
-            <a href="/logout" class="btn btn-sm btn-outline-secondary">Logout</a>
-        </div>
-        <div class="col-lg-8">
-            <div class="p-4 upload-card bg-white">
-                <div class="d-flex align-items-start">
-                    <div class="flex-grow-1">
-                        <h3 class="mb-1">AI Resume Screening</h3>
-                        <p class="muted-small mb-3">Upload a candidate resume (PDF or TXT). The system will extract text, score relevance, and suggest interview questions.</p>
-                    </div>
-                    <div class="text-end ms-3">
-                        <span class="badge bg-primary">Fast · Lightweight · Safe</span>
-                    </div>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>AI Resume Screening</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="/static/css/style.css">
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-custom">
+            <div class="container-compact d-flex align-items-center">
+                <a class="brand me-3" href="/">AI Resume Screening</a>
+                <div class="ms-auto d-flex gap-2 align-items-center">
+                    <a class="btn btn-sm btn-outline-light" href="/chatbot">Chatbot</a>
+                    <a class="btn btn-sm btn-outline-light" href="/interview">Interview</a>
+                    <a class="btn btn-sm btn-outline-light" href="/results">Results</a>
                 </div>
+            </div>
+        </nav>
 
-                <div class="mt-3">
-                    <label class="form-label">Job description (optional)</label>
-                    <textarea id="jobDesc" class="form-control" rows="3" placeholder="Paste the job description to match against"></textarea>
-                </div>
-
-                <div id="dropzone" class="dropzone mt-3" tabindex="0">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="mb-2" style="color:var(--brand)">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 15a4 4 0 004 4h10a4 4 0 004-4c0-2.21-1.79-4-4-4h-1.5a3.5 3.5 0 01-6.9 0H7a4 4 0 00-4 4z"/>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 3v9"/>
-                    </svg>
-                    <div id="dz-text"><strong>Drag & drop a resume here</strong> or <button id="selectBtn" class="btn btn-link p-0">select a file</button></div>
-                    <input id="fileInput" type="file" accept=".pdf,.txt" style="display:none">
-                    <div class="mt-2 muted-small">Accepted: PDF, TXT · Max 5MB</div>
-                </div>
-
-                <div id="actions" class="d-flex gap-2 mt-3">
-                    <button id="uploadBtn" class="btn btn-primary" disabled>Upload & Score</button>
-                    <button id="clearBtn" class="btn btn-outline-secondary" disabled>Clear</button>
-                    <div class="ms-auto align-self-center muted-small" id="fileName">No file selected</div>
-                </div>
-
-                <div id="statusArea" class="mt-4" style="display:none">
-                    <div class="mb-2">Result</div>
-                    <div class="card p-3">
-                        <div class="d-flex align-items-center">
-                            <div class="me-3">
-                                <div class="progress" style="width:140px;height:18px">
-                                    <div id="scoreBar" class="progress-bar bg-success" role="progressbar" style="width:0%"></div>
-                                </div>
-                            </div>
+        <main class="py-5 container-compact">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <h1 class="hero-title">AI Resume Screening</h1>
+                    <div class="card-glass upload-card">
+                        <div class="d-flex justify-content-between align-items-start">
                             <div>
-                                <div><strong id="scoreText">0</strong>/100</div>
-                                <div class="muted-small" id="detailsText">Waiting for server...</div>
+                                <h2 class="card-title mb-1">Smart resume matcher</h2>
+                                <p class="muted-small mb-2">Upload candidate resumes and compare them to your job description. Get scores and suggested interview questions instantly.</p>
+                            </div>
+                            <div><span class="badge bg-light text-dark">Local • Private</span></div>
+                        </div>
+
+                        <div class="mt-3">
+                            <label class="form-label">Job description (optional)</label>
+                            <textarea id="jobDesc" class="form-control" rows="3" placeholder="Paste the job description to match against"></textarea>
+                        </div>
+
+                        <div id="dropzone" class="dropzone mt-3" tabindex="0">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="mb-2">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 3v9"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 15a4 4 0 004 4h10a4 4 0 004-4c0-2.21-1.79-4-4-4h-1.5a3.5 3.5 0 01-6.9 0H7a4 4 0 00-4 4z"/>
+                            </svg>
+                            <div id="dz-text"><strong>Drag & drop resumes</strong> or <button id="selectBtn" class="btn btn-link p-0">select files</button></div>
+                            <input id="fileInput" type="file" accept=".pdf,.txt" style="display:none" multiple>
+                            <div class="mt-2 muted-small">Accepted: PDF, TXT · Multiple files supported</div>
+                        </div>
+
+                        <div id="actions" class="d-flex gap-2 mt-3">
+                            <button id="uploadBtn" class="btn btn-primary" disabled>Upload & Score</button>
+                            <button id="clearBtn" class="btn btn-outline-light" disabled>Clear</button>
+                            <div class="ms-auto align-self-center muted-small" id="fileName">No files selected</div>
+                        </div>
+
+                        <div id="statusArea" class="mt-4" style="display:none">
+                            <div class="mb-2">Result</div>
+                            <div class="result-card">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-3">
+                                        <div class="progress" style="width:140px;height:18px">
+                                            <div id="scoreBar" class="progress-bar bg-success" role="progressbar" style="width:0%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div><strong id="scoreText">0</strong>/100</div>
+                                        <div class="muted-small" id="detailsText">Waiting for server...</div>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div id="questionsArea"></div>
                             </div>
                         </div>
-                        <hr>
-                        <div id="questionsArea"></div>
+
                     </div>
+                    <div class="text-center muted-small mt-3 footer">Powered by your local AI resume pipeline</div>
                 </div>
-
             </div>
-            <div class="text-center muted-small mt-3">Powered by your local AI resume pipeline</div>
-        </div>
-    </div>
-</div>
+        </main>
 
-<script>
-    const dropzone = document.getElementById('dropzone');
-    const fileInput = document.getElementById('fileInput');
-    const selectBtn = document.getElementById('selectBtn');
-    const uploadBtn = document.getElementById('uploadBtn');
-    const clearBtn = document.getElementById('clearBtn');
-    const fileName = document.getElementById('fileName');
-    const statusArea = document.getElementById('statusArea');
-    const scoreBar = document.getElementById('scoreBar');
-    const scoreText = document.getElementById('scoreText');
-    const detailsText = document.getElementById('detailsText');
-    const questionsArea = document.getElementById('questionsArea');
+        <script>
+            // keep original JS behavior but allow multiple files
+            const dropzone = document.getElementById('dropzone');
+            const fileInput = document.getElementById('fileInput');
+            const selectBtn = document.getElementById('selectBtn');
+            const uploadBtn = document.getElementById('uploadBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const fileName = document.getElementById('fileName');
+            const statusArea = document.getElementById('statusArea');
+            const scoreBar = document.getElementById('scoreBar');
+            const scoreText = document.getElementById('scoreText');
+            const detailsText = document.getElementById('detailsText');
+            const questionsArea = document.getElementById('questionsArea');
 
-    let selectedFile = null;
+            let selectedFiles = [];
 
-    function setFile(file){
-        selectedFile = file;
-        fileName.textContent = file ? file.name : 'No file selected';
-        uploadBtn.disabled = !file;
-        clearBtn.disabled = !file;
-    }
+            function setFiles(files){
+                selectedFiles = files ? Array.from(files) : [];
+                fileName.textContent = selectedFiles.length ? selectedFiles.map(f=>f.name).join(', ') : 'No files selected';
+                uploadBtn.disabled = selectedFiles.length===0;
+                clearBtn.disabled = selectedFiles.length===0;
+            }
 
-    selectBtn.addEventListener('click', ()=> fileInput.click());
-    fileInput.addEventListener('change', e=> setFile(e.target.files[0]));
+            selectBtn.addEventListener('click', ()=> fileInput.click());
+            fileInput.addEventListener('change', e=> setFiles(e.target.files));
 
-    ;['dragenter','dragover'].forEach(ev=> dropzone.addEventListener(ev, e=>{e.preventDefault(); e.stopPropagation(); dropzone.classList.add('dragover')}))
-    ;['dragleave','drop'].forEach(ev=> dropzone.addEventListener(ev, e=>{e.preventDefault(); e.stopPropagation(); dropzone.classList.remove('dragover')}))
-    dropzone.addEventListener('drop', e=>{
-        const f = e.dataTransfer.files && e.dataTransfer.files[0];
-        if(f) setFile(f);
-    });
+            ;['dragenter','dragover'].forEach(ev=> dropzone.addEventListener(ev, e=>{e.preventDefault(); e.stopPropagation(); dropzone.classList.add('dragover')}))
+            ;['dragleave','drop'].forEach(ev=> dropzone.addEventListener(ev, e=>{e.preventDefault(); e.stopPropagation(); dropzone.classList.remove('dragover')}))
+            dropzone.addEventListener('drop', e=>{
+                const fs = e.dataTransfer.files && e.dataTransfer.files.length ? e.dataTransfer.files : null;
+                if(fs) setFiles(fs);
+            });
 
-    clearBtn.addEventListener('click', ()=>{ setFile(null); fileInput.value = ''; statusArea.style.display='none'; scoreBar.style.width='0%'; scoreText.textContent='0'; detailsText.textContent=''; questionsArea.innerHTML=''; });
+            clearBtn.addEventListener('click', ()=>{ setFiles(null); fileInput.value = ''; statusArea.style.display='none'; scoreBar.style.width='0%'; scoreText.textContent='0'; detailsText.textContent=''; questionsArea.innerHTML=''; });
 
-    uploadBtn.addEventListener('click', async ()=>{
-        if(!selectedFile) return;
-        uploadBtn.disabled = true; uploadBtn.textContent = 'Uploading...';
-        detailsText.textContent = 'Uploading and scoring...'; statusArea.style.display='block';
-        try{
-            const fd = new FormData(); fd.append('file', selectedFile);
-            const jobDescEl = document.getElementById('jobDesc');
-            if (jobDescEl && jobDescEl.value) fd.append('job_desc', jobDescEl.value);
-            const res = await fetch('/interview', { method:'POST', body: fd});
-            const data = await res.json();
-            if(!res.ok){ detailsText.textContent = data.error || 'Upload failed'; uploadBtn.disabled=false; uploadBtn.textContent='Upload & Score'; return; }
-            const score = data.score ?? 0;
-            const details = data.details ?? {};
-            scoreBar.style.width = Math.min(100, score) + '%';
-            scoreText.textContent = score;
-            detailsText.textContent = 'Keywords: ' + (details.keyword_match ?? '—') + ' · Experience: ' + (details.experience_hint ?? '—');
+            uploadBtn.addEventListener('click', async ()=>{
+                if(!selectedFiles.length) return;
+                uploadBtn.disabled = true; uploadBtn.textContent = 'Uploading...';
+                detailsText.textContent = 'Uploading and scoring...'; statusArea.style.display='block';
+                try{
+                    const fd = new FormData();
+                    selectedFiles.forEach(f=> fd.append('resumes', f));
+                    const jobDescEl = document.getElementById('jobDesc');
+                    if (jobDescEl && jobDescEl.value) fd.append('job_desc', jobDescEl.value);
+                    const res = await fetch('/', { method:'POST', body: fd});
+                    // legacy: index POST renders a page, but server returns HTML — we prefer redirect to results page
+                    // If server returns JSON, handle it; otherwise reload to see results.
+                    if(res.headers.get('Content-Type') && res.headers.get('Content-Type').includes('application/json')){
+                        const data = await res.json();
+                        // not expected for index; show basic info
+                        detailsText.textContent = data.message || 'Processed';
+                    } else {
+                        // navigate to results page which server renders
+                        window.location.reload();
+                    }
+                }catch(err){ detailsText.textContent = 'Network or server error'; }
+                finally{ uploadBtn.disabled = false; uploadBtn.textContent = 'Upload & Score'; }
+            });
+        </script>
 
-                // use questions returned from /interview if present — render answer inputs
-                if (data.questions && data.questions.length) {
-                    const qhtml = ['<strong>Suggested Questions</strong>','<div id="qaForm" class="mt-2">'];
-                    data.questions.forEach((q, i) => {
-                        qhtml.push('<div class="mb-3">');
-                        qhtml.push('<label class="form-label">' + q + '</label>');
-                        qhtml.push('<textarea class="form-control answer-input" data-idx="'+i+'" rows="2"></textarea>');
-                        qhtml.push('</div>');
-                    });
-                    qhtml.push('</div>');
-                    qhtml.push('<button id="submitAnswersBtn" class="btn btn-success btn-sm mt-2">Submit Answers</button>');
-                    questionsArea.innerHTML = qhtml.join('');
-
-                    // attach handler
-                    document.getElementById('submitAnswersBtn').addEventListener('click', async ()=>{
-                        const ansEls = Array.from(document.querySelectorAll('.answer-input'));
-                        const answers = ansEls.map(e => e.value || '');
-                        detailsText.textContent = 'Scoring answers...';
-                        try{
-                            const payload = { answers: answers, base_score: data.score, resume_id: data.resume_id };
-                            const resp = await fetch('/submit_answers', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)});
-                            const j = await resp.json();
-                            if(resp.ok){
-                                // update UI with combined score
-                                const combined = j.combined_score ?? data.score;
-                                const answerScore = j.answer_score ?? 0;
-                                scoreBar.style.width = Math.min(100, combined) + '%';
-                                scoreText.textContent = combined;
-                                detailsText.textContent = 'Resume: ' + data.score + ' · Answers: ' + answerScore + ' · Combined: ' + combined;
-                            } else {
-                                detailsText.textContent = j.error || 'Answer scoring failed';
-                            }
-                        }catch(e){ detailsText.textContent = 'Network error scoring answers'; }
-                    });
-                }
-
-        }catch(err){
-            detailsText.textContent = 'Network or server error';
-        }finally{
-            uploadBtn.disabled = false; uploadBtn.textContent = 'Upload & Score';
-        }
-    });
-</script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
 </html>
