@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Send Applicant Email - AI Resume Screening</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a5c4f 0%, #0f3a2e 100%);
+            min-height: 100vh;
+        }
+
+        .navbar-custom {
+            background: rgba(15, 23, 36, 0.8) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .navbar-brand-custom {
+            font-weight: 800;
+            font-size: 1.4rem;
+            color: #fff;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #eef2f7;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #7c3aed;
+        }
+
+        .container-custom {
+            max-width: 600px;
+            margin: 3rem auto;
+            padding: 0 1rem;
+        }
+
+        .form-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 15px;
+            padding: 2.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-card h1 {
+            color: #fff;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .form-subtitle {
+            text-align: center;
+            color: #9aa4b2;
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            color: #eef2f7;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.7rem;
+        }
+
+        .form-control {
+            background: rgba(255, 255, 255, 0.08) !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            color: #eef2f7 !important;
+            border-radius: 8px;
+            padding: 0.85rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.12) !important;
+            border-color: #7c3aed !important;
+            box-shadow: 0 0 0 0.2rem rgba(124, 58, 237, 0.25) !important;
+            color: #eef2f7 !important;
+        }
+
+        .form-control::placeholder {
+            color: #6b7a88 !important;
+        }
+
+        .form-select {
+            background: rgba(255, 255, 255, 0.08) !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            color: #eef2f7 !important;
+            border-radius: 8px;
+            padding: 0.85rem 1rem;
+        }
+
+        .form-select:focus {
+            background: rgba(255, 255, 255, 0.12) !important;
+            border-color: #7c3aed !important;
+            box-shadow: 0 0 0 0.2rem rgba(124, 58, 237, 0.25) !important;
+        }
+
+        .form-select option {
+            background: #1a5c4f;
+            color: #eef2f7;
+        }
+
+        .btn-send {
+            background: linear-gradient(90deg, #7c3aed, #06b6d4);
+            border: 0;
+            color: #fff;
+            font-weight: 600;
+            padding: 0.9rem 1.5rem;
+            border-radius: 8px;
+            width: 100%;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-send:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(124, 58, 237, 0.4);
+            color: #fff;
+        }
+
+        .btn-back {
+            display: inline-block;
+            color: #7c3aed;
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            transition: color 0.3s ease;
+        }
+
+        .btn-back:hover {
+            color: #06b6d4;
+        }
+
+        .alert {
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-success {
+            background: rgba(0, 255, 0, 0.15) !important;
+            border: 1px solid rgba(0, 255, 0, 0.3) !important;
+            color: #4ade80 !important;
+        }
+
+        .alert-danger {
+            background: rgba(255, 0, 0, 0.15) !important;
+            border: 1px solid rgba(255, 0, 0, 0.3) !important;
+            color: #ff6b6b !important;
+        }
+
+        .alert-info {
+            background: rgba(6, 182, 212, 0.15) !important;
+            border: 1px solid rgba(6, 182, 212, 0.3) !important;
+            color: #06b6d4 !important;
+        }
+
+        .spinner {
+            display: none;
+            margin-left: 0.5rem;
+        }
+
+        .spinner.show {
+            display: inline-block;
+        }
+
+        .help-text {
+            font-size: 0.85rem;
+            color: #9aa4b2;
+            margin-top: 0.3rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <div class="container-fluid px-4">
+            <span class="navbar-brand-custom">🎓 AI Resume Screening</span>
+            <div class="ms-auto nav-links">
+                <a href="/">Home</a>
+                {% if session.get('user_id') %}
+                    <span style="color: #9aa4b2;">Welcome, {{ session.get('username') }}</span>
+                    <a href="/logout" class="btn btn-sm btn-outline-light">Logout</a>
+                {% else %}
+                    <a href="/admin_login" class="btn btn-sm btn-outline-light">Admin Login</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-custom">
+        <a href="/" class="btn-back">← Back to Home</a>
+
+        <div class="form-card">
+            <h1>📧 Send Status Email</h1>
+            <p class="form-subtitle">Send an application status notification to an applicant</p>
+
+            <div id="message" style="display: none;"></div>
+
+            <form id="emailForm">
+                <div class="form-group">
+                    <label class="form-label">Applicant Name</label>
+                    <input type="text" id="applicant_name" class="form-control" placeholder="e.g., John Doe" required>
+                    <div class="help-text">Full name of the applicant</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Applicant Email</label>
+                    <input type="email" id="applicant_email" class="form-control" placeholder="e.g., john@example.com" required>
+                    <div class="help-text">Email address to send notification to</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Application Status</label>
+                    <select id="status" class="form-select" required>
+                        <option value="">Select status...</option>
+                        <option value="Selected">✓ Selected</option>
+                        <option value="Rejected">✗ Rejected</option>
+                    </select>
+                    <div class="help-text">The applicant's application status</div>
+                </div>
+
+                <button type="submit" class="btn-send" id="submitBtn">
+                    Send Email
+                    <span class="spinner" id="spinner">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    </span>
+                </button>
+            </form>
+
+            <hr style="border-color: rgba(255, 255, 255, 0.1); margin: 2rem 0;">
+
+            <p style="color: #9aa4b2; font-size: 0.9rem;">
+                <strong>💡 Tips:</strong>
+                <br>• The applicant will receive a professional, templated email with their status
+                <br>• Selected applicants receive a congratulatory message
+                <br>• Rejected applicants receive an encouraging rejection letter
+                <br>• Make sure the email address is correct before sending
+            </p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('emailForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById('applicant_name').value.trim();
+            const email = document.getElementById('applicant_email').value.trim();
+            const status = document.getElementById('status').value.trim();
+            const messageDiv = document.getElementById('message');
+            const submitBtn = document.getElementById('submitBtn');
+            const spinner = document.getElementById('spinner');
+
+            // Validate inputs
+            if (!name || !email || !status) {
+                showMessage('Please fill in all fields', 'danger');
+                return;
+            }
+
+            // Show loading state
+            submitBtn.disabled = true;
+            spinner.classList.add('show');
+
+            try {
+                const response = await fetch('/send_applicant_email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams({
+                        applicant_name: name,
+                        applicant_email: email,
+                        status: status
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    showMessage(`✓ ${data.message}`, 'success');
+                    document.getElementById('emailForm').reset();
+                } else {
+                    showMessage(data.message || 'Failed to send email', 'danger');
+                }
+            } catch (error) {
+                showMessage(`Error: ${error.message}`, 'danger');
+            } finally {
+                submitBtn.disabled = false;
+                spinner.classList.remove('show');
+            }
+        });
+
+        function showMessage(message, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.className = `alert alert-${type}`;
+            messageDiv.textContent = message;
+            messageDiv.style.display = 'block';
+            messageDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Resume Review</title>
+    <style>
+        body {
+            font-family: Arial;
+            margin: 30px;
+            background: #f5f5f5;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #ccc;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        .score {
+            font-size: 18px;
+            font-weight: bold;
+            color: green;
+        }
+
+        .feedback {
+            color: red;
+        }
+
+        button {
+            padding: 10px 15px;
+            background: blue;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>Resume Review & Scoring</h1>
+
+<!-- Job Description Form -->
+<form method="POST">
+    <h3>Enter Job Description</h3>
+    <textarea name="job_desc" placeholder="Paste job description here..."></textarea>
+    <br>
+    <button type="submit">Analyze Resumes</button>
+</form>
+
+<hr>
+
+<!-- Show Results -->
+{% if results %}
+
+    {% for result in results %}
+    <div class="card">
+
+        <h2>{{ result.name }}</h2>
+
+        <!-- Resume Score -->
+        <p class="score">
+            Resume Match Score: {{ result.score }}
+        </p>
+
+        <!-- Feedback Score -->
+        <p class="score">
+            Improvement Score: {{ result.feedback_score }}/100
+        </p>
+
+        <!-- Feedback List -->
+        <h3>Corrections Needed:</h3>
+        <ul class="feedback">
+            {% for item in result.feedback_list %}
+                <li>{{ item }}</li>
+            {% endfor %}
+        </ul>
+
+        <!-- Download buttons -->
+        <br>
+        <a href="/download_original/{{ result.name }}">
+            <button>Download Original</button>
+        </a>
+
+        <a href="/download_updated/{{ result.name }}">
+            <button>Download Updated</button>
+        </a>
+
+    </div>
+    {% endfor %}
+
+{% endif %}
+
+<hr>
+
+<!-- Voice Interview Button -->
+<h2>Next Step</h2>
+
+<a href="/voice_interview">
+    <button>Start Voice Interview</button>
+</a>
+
+</body>
+</html>

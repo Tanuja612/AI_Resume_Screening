@@ -13,3 +13,10 @@ Thumbs.db
 
 # Environment variables
 .env
+*.md
+
+# stored resumes
+resumes/
+processed_resumes/
+ats_resumes/
+requirement_copy.txt/

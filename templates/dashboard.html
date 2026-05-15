@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dashboard - AI Resume Screening</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a5c4f 0%, #0f3a2e 100%);
+            min-height: 100vh;
+        }
+
+        .navbar-custom {
+            background: rgba(15, 23, 36, 0.8) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 1rem;
+        }
+
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .dashboard-header h1 {
+            color: #fff;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .dashboard-header p {
+            color: #9aa4b2;
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .option-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 15px;
+            padding: 2.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .option-card:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(124, 58, 237, 0.5);
+            box-shadow: 0 12px 48px rgba(124, 58, 237, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .option-card.create-resume:hover {
+            box-shadow: 0 12px 48px rgba(74, 222, 128, 0.2);
+            border-color: rgba(74, 222, 128, 0.5);
+        }
+
+        .option-card.upload-resume:hover {
+            box-shadow: 0 12px 48px rgba(6, 182, 212, 0.2);
+            border-color: rgba(6, 182, 212, 0.5);
+        }
+
+        .option-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .option-card:hover .option-icon {
+            transform: scale(1.15);
+        }
+
+        .option-card h2 {
+            color: #fff;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0 0 1rem;
+        }
+
+        .option-card p {
+            color: #9aa4b2;
+            font-size: 1rem;
+            margin: 0 0 1.5rem;
+            line-height: 1.6;
+        }
+
+        .option-features {
+            text-align: left;
+            width: 100%;
+            margin-bottom: 1.5rem;
+        }
+
+        .option-features li {
+            color: #9aa4b2;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .option-features li::before {
+            content: "✓ ";
+            color: #4ade80;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        .option-card.upload-resume .option-features li::before {
+            content: "✓ ";
+            color: #06b6d4;
+        }
+
+        .option-btn {
+            background: linear-gradient(90deg, #7c3aed, #06b6d4);
+            border: 0;
+            color: #fff;
+            font-weight: 600;
+            padding: 0.9rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            width: 100%;
+            max-width: 200px;
+        }
+
+        .option-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(124, 58, 237, 0.4);
+            color: #fff;
+        }
+
+        .create-resume .option-btn {
+            background: linear-gradient(90deg, #4ade80, #10b981);
+        }
+
+        .create-resume .option-btn:hover {
+            box-shadow: 0 8px 24px rgba(74, 222, 128, 0.4);
+        }
+
+        .upload-resume .option-btn {
+            background: linear-gradient(90deg, #06b6d4, #0891b2);
+        }
+
+        .upload-resume .option-btn:hover {
+            box-shadow: 0 8px 24px rgba(6, 182, 212, 0.4);
+        }
+
+        .divider-section {
+            display: flex;
+            align-items: center;
+            margin: 3rem 0;
+            opacity: 0.3;
+        }
+
+        .divider-section::before,
+        .divider-section::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .divider-section span {
+            padding: 0 1rem;
+            color: #9aa4b2;
+        }
+
+        .recent-activity {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .recent-activity h3 {
+            color: #fff;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .activity-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-info {
+            text-align: left;
+        }
+
+        .activity-name {
+            color: #eef2f7;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .activity-date {
+            color: #9aa4b2;
+            font-size: 0.9rem;
+        }
+
+        .activity-badge {
+            background: rgba(124, 58, 237, 0.2);
+            color: #a78bfa;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .no-activity {
+            color: #9aa4b2;
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-header h1 {
+                font-size: 1.8rem;
+            }
+
+            .options-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .option-card {
+                padding: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand" href="/" style="color: #fff; font-weight: 800; font-size: 1.3rem;">🎓 AI Resume Screening</a>
+            <div class="ms-auto d-flex gap-2 align-items-center">
+                <span style="color: #9aa4b2;">Welcome, <strong>{{ session.get('username') }}</strong></span>
+                <a href="/logout" class="btn btn-sm btn-outline-light">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Content -->
+    <div class="dashboard-container">
+        <!-- Header -->
+        <div class="dashboard-header">
+            <h1>Welcome to Your Dashboard</h1>
+            <p>Choose how you'd like to begin: create a new resume or upload an existing one</p>
+        </div>
+
+        <!-- Main Options -->
+        <div class="options-grid">
+            <!-- Create Resume Option -->
+            <div class="option-card create-resume">
+                <div class="option-icon">📝</div>
+                <h2>Create Resume</h2>
+                <p>Build a professional, ATS-friendly resume from scratch using our intelligent templates</p>
+                <ul class="option-features">
+                    <li>Multiple professional templates</li>
+                    <li>Step-by-step guided form</li>
+                    <li>Live preview</li>
+                    <li>ATS optimized format</li>
+                </ul>
+                <a href="/resume_builder" class="option-btn">Start Creating</a>
+            </div>
+
+            <!-- Upload Resume Option -->
+            <div class="option-card upload-resume">
+                <div class="option-icon">📤</div>
+                <h2>Upload Resume</h2>
+                <p>Upload your existing resumes for ATS compatibility checking and job matching</p>
+                <ul class="option-features">
+                    <li>Multiple file upload</li>
+                    <li>PDF & DOCX support</li>
+                    <li>ATS compatibility analysis</li>
+                    <li>Instant scoring</li>
+                </ul>
+                <a href="/upload_resume" class="option-btn">Upload Now</a>
+            </div>
+        </div>
+
+        <!-- Recent Activity Section -->
+        {% if recent_resumes %}
+        <div class="divider-section">
+            <span>Recent Activity</span>
+        </div>
+
+        <div class="recent-activity">
+            <h3>📋 Your Recent Resumes</h3>
+            {% if recent_resumes %}
+                {% for resume in recent_resumes %}
+                <div class="activity-item">
+                    <div class="activity-info">
+                        <div class="activity-name">{{ resume.filename }}</div>
+                        <div class="activity-date">
+                            {% if resume.created_at %}
+                                Uploaded {{ resume.created_at[:10] }}
+                            {% else %}
+                                Recently added
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div>
+                        {% if resume.final_score %}
+                            <span class="activity-badge">Score: {{ resume.final_score }}/100</span>
+                        {% else %}
+                            <span class="activity-badge">Pending Review</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-activity">
+                    <p>No resumes yet. Create or upload one to get started!</p>
+                </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

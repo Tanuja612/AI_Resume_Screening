@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Voice Interview - AI Assistant</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .voice-interview-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .voice-chat-box {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 700px;
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .voice-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .voice-header h2 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .voice-header p {
+            margin: 0.5rem 0 0 0;
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            background: #f8f9fa;
+        }
+
+        .message {
+            margin-bottom: 1.5rem;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.bot {
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .message.user {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .message-bubble {
+            max-width: 80%;
+            padding: 1rem 1.25rem;
+            border-radius: 15px;
+            word-wrap: break-word;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .message.bot .message-bubble {
+            background: #e9ecef;
+            color: #333;
+            border-bottom-left-radius: 2px;
+        }
+
+        .message.user .message-bubble {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 2px;
+        }
+
+        .bot-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            margin-right: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .voice-controls {
+            padding: 1.5rem;
+            background: white;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: #666;
+            padding: 0.5rem 1rem;
+            background: #f0f0f0;
+            border-radius: 20px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #999;
+        }
+
+        .status-dot.listening {
+            background: #28a745;
+            animation: pulse 1.5s infinite;
+        }
+
+        .status-dot.speaking {
+            background: #ffc107;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .voice-btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .voice-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-listen {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-listen:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-listen.active {
+            animation: pulse-btn 1s infinite;
+        }
+
+        @keyframes pulse-btn {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+
+        .btn-stop {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-stop:hover:not(:disabled) {
+            background: #c82333;
+        }
+
+        .btn-next {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-next:hover:not(:disabled) {
+            background: #218838;
+        }
+
+        .score-display {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .interview-complete {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .interview-complete h3 {
+            color: #28a745;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .interview-complete p {
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .final-score {
+            font-size: 2rem;
+            font-weight: 700;
+            color: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 1rem 0;
+        }
+
+        .btn-finish {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        .btn-finish:hover {
+            transform: scale(1.05);
+        }
+
+        .waveform {
+            display: flex;
+            align-items: flex-end;
+            gap: 3px;
+            height: 30px;
+            margin: 0 auto;
+        }
+
+        .waveform span {
+            width: 3px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 3px;
+            animation: wave 0.6s ease-in-out infinite;
+        }
+
+        .waveform span:nth-child(1) { animation-delay: 0s; }
+        .waveform span:nth-child(2) { animation-delay: 0.1s; }
+        .waveform span:nth-child(3) { animation-delay: 0.2s; }
+        .waveform span:nth-child(4) { animation-delay: 0.3s; }
+        .waveform span:nth-child(5) { animation-delay: 0.4s; }
+
+        @keyframes wave {
+            0%, 100% { height: 5px; }
+            50% { height: 25px; }
+        }
+
+        @media (max-width: 600px) {
+            .voice-chat-box {
+                height: auto;
+                max-height: calc(100vh - 2rem);
+            }
+
+            .message-bubble {
+                max-width: 95%;
+            }
+
+            .voice-controls {
+                flex-direction: column;
+            }
+
+            .voice-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-custom">
+        <div class="container-compact">
+            <a class="brand" href="/">AI Resume Screening</a>
+            <div class="ms-auto d-flex gap-2">
+                <a class="btn btn-sm btn-outline-light" href="/">Home</a>
+                {% if session.get('user_id') %}<a class="btn btn-sm btn-outline-light" href="/logout">Logout</a>{% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="voice-interview-container">
+        <div class="voice-chat-box">
+            <!-- Header -->
+            <div class="voice-header">
+                <h2>🎤 Virtual Interview</h2>
+                <p>Talk to your AI interviewer - Answer questions naturally</p>
+            </div>
+
+            <!-- Messages -->
+            <div class="messages-container" id="messagesContainer">
+                <div id="initialPrompt" class="message bot">
+                    <div class="bot-avatar">🤖</div>
+                    <div class="message-bubble">
+                        Loading interview...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Score Display -->
+            <div id="scoreDisplay" style="display: none;">
+                <div class="score-display">
+                    Resume Score: <span id="resumeScore">--</span>%
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="voice-controls">
+                <div class="status-indicator">
+                    <div class="status-dot" id="statusDot"></div>
+                    <span id="statusText">Ready</span>
+                </div>
+
+                <button class="voice-btn btn-listen" id="listenBtn" onclick="startListening()">
+                    🎙️ Listen
+                </button>
+
+                <button class="voice-btn btn-stop" id="stopBtn" onclick="stopListening()" disabled style="display: none;">
+                    ⏹️ Stop
+                </button>
+
+                <button class="voice-btn btn-next" id="nextBtn" onclick="nextQuestion()" disabled>
+                    → Next
+                </button>
+
+                <button class="voice-btn btn-finish" id="finishBtn" onclick="finishInterview()" disabled style="display: none;">
+                    ✓ Finish
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Speech Recognition & Synthesis
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+        const synth = window.speechSynthesis;
+
+        // State
+        let currentQuestionIndex = 0;
+        let questions = [];
+        let answers = [];
+        let isListening = false;
+        let isSpeaking = false;
+        let baseScore = {{ base_score or 0 }};
+        let resumeName = '{{ resume_name or "candidate" }}';
+        let interviewComplete = false;
+
+        // Configure speech recognition
+        recognition.continuous = false;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+
+        // Load questions
+        async function loadQuestions() {
+            try {
+                // Get questions from template variable or use default
+                const questionsData = {
+                    questions: [
+                        "Tell me about yourself and your professional background.",
+                        "What are your key technical skills?",
+                        "Why should we hire you for this position?",
+                        "Describe a challenging project you worked on and how you solved it.",
+                        "Where do you see yourself in 5 years?"
+                    ]
+                };
+
+                questions = questionsData.questions;
+                initializeInterview();
+            } catch (error) {
+                console.error('Error loading questions:', error);
+                addBotMessage("Sorry, I couldn't load the interview questions. Please refresh the page.");
+            }
+        }
+
+        function initializeInterview() {
+            if (questions.length === 0) {
+                addBotMessage("No interview questions available.");
+                return;
+            }
+
+            const initialMsg = `Welcome to your interview! I'm your AI interviewer. We have ${questions.length} questions for you today. Please speak your answers naturally. Let's begin!`;
+            const prompt = document.getElementById('initialPrompt');
+            if (prompt) prompt.remove();
+
+            addBotMessage(initialMsg);
+            setTimeout(() => askQuestion(0), 1500);
+        }
+
+        function askQuestion(index) {
+            if (index >= questions.length) {
+                completeInterview();
+                return;
+            }
+
+            currentQuestionIndex = index;
+            const question = questions[index];
+            addBotMessage(`Question ${index + 1} of ${questions.length}: ${question}`);
+            
+            // Speak the question
+            speakText(question);
+            
+            // Enable listening
+            setTimeout(() => {
+                document.getElementById('listenBtn').disabled = false;
+                updateStatus('Ready to listen', 'listening');
+            }, 500);
+        }
+
+        function speakText(text) {
+            if (isSpeaking) synth.cancel();
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 1;
+            utterance.pitch = 1;
+            utterance.volume = 1;
+            
+            utterance.onstart = () => {
+                isSpeaking = true;
+                updateStatus('AI Speaking...', 'speaking');
+            };
+            
+            utterance.onend = () => {
+                isSpeaking = false;
+                updateStatus('Ready to listen', 'listening');
+            };
+            
+            synth.speak(utterance);
+        }
+
+        function startListening() {
+            if (isListening || isSpeaking) return;
+            
+            isListening = true;
+            let transcript = '';
+            
+            document.getElementById('listenBtn').style.display = 'none';
+            document.getElementById('stopBtn').style.display = 'inline-block';
+            document.getElementById('listenBtn').classList.add('active');
+            updateStatus('Listening...', 'listening');
+            
+            recognition.start();
+            
+            recognition.onresult = (event) => {
+                transcript = '';
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    transcript += event.results[i][0].transcript;
+                }
+                
+                if (event.isFinal) {
+                    addUserMessage(transcript);
+                    answers[currentQuestionIndex] = transcript;
+                }
+            };
+            
+            recognition.onerror = (event) => {
+                addBotMessage(`Error: ${event.error}. Please try again.`);
+                stopListening();
+            };
+        }
+
+        function stopListening() {
+            recognition.stop();
+            isListening = false;
+            document.getElementById('listenBtn').style.display = 'inline-block';
+            document.getElementById('stopBtn').style.display = 'none';
+            document.getElementById('listenBtn').classList.remove('active');
+            document.getElementById('nextBtn').disabled = false;
+            updateStatus('Answer recorded', '');
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < questions.length - 1) {
+                document.getElementById('nextBtn').disabled = true;
+                stopListening();
+                setTimeout(() => askQuestion(currentQuestionIndex + 1), 1000);
+            } else {
+                document.getElementById('finishBtn').style.display = 'inline-block';
+                document.getElementById('nextBtn').style.display = 'none';
+            }
+        }
+
+        function completeInterview() {
+            interviewComplete = true;
+            const container = document.getElementById('messagesContainer');
+            
+            container.innerHTML += `
+                <div class="message bot">
+                    <div class="bot-avatar">🤖</div>
+                    <div class="message-bubble interview-complete">
+                        <h3>Interview Complete! ✨</h3>
+                        <p>Thank you for your answers. Your responses are being evaluated...</p>
+                        <div class="final-score" id="finalScore">Processing...</div>
+                        <p id="scoreMessage">Please wait while we analyze your answers.</p>
+                        <button class="btn-finish" onclick="submitInterview()">Submit Interview</button>
+                    </div>
+                </div>
+            `;
+            
+            container.scrollTop = container.scrollHeight;
+            document.getElementById('listenBtn').disabled = true;
+            document.getElementById('nextBtn').disabled = true;
+            
+            // Simulate scoring
+            setTimeout(() => {
+                const score = baseScore || Math.floor(Math.random() * 40 + 60);
+                document.getElementById('finalScore').textContent = score + '%';
+                document.getElementById('scoreMessage').textContent = score >= 70 ? 
+                    '🎉 Great performance!' : score >= 50 ? 
+                    '📊 Good effort!' : '💪 Keep improving!';
+            }, 2000);
+        }
+
+        function finishInterview() {
+            document.getElementById('finishBtn').disabled = true;
+            addBotMessage('Thank you! Your interview has been submitted. Redirecting...');
+            setTimeout(() => {
+                submitInterview();
+            }, 2000);
+        }
+
+        function submitInterview() {
+            // Submit answers to backend
+            const formData = new FormData();
+            answers.forEach((answer, index) => {
+                const input = document.createElement('input');
+                input.name = 'answers';
+                input.value = answer;
+            });
+
+            // Redirect to results page
+            fetch('/interview_result', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    answers: answers,
+                    base_score: baseScore
+                })
+            }).then(() => {
+                window.location.href = '/interview_result';
+            }).catch(() => {
+                window.location.href = '/interview_result';
+            });
+        }
+
+        function addBotMessage(text) {
+            const container = document.getElementById('messagesContainer');
+            const messageEl = document.createElement('div');
+            messageEl.className = 'message bot';
+            messageEl.innerHTML = `
+                <div class="bot-avatar">🤖</div>
+                <div class="message-bubble">${escapeHtml(text)}</div>
+            `;
+            container.appendChild(messageEl);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function addUserMessage(text) {
+            const container = document.getElementById('messagesContainer');
+            const messageEl = document.createElement('div');
+            messageEl.className = 'message user';
+            messageEl.innerHTML = `<div class="message-bubble">${escapeHtml(text)}</div>`;
+            container.appendChild(messageEl);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function updateStatus(text, dotClass) {
+            document.getElementById('statusText').textContent = text;
+            const dot = document.getElementById('statusDot');
+            dot.className = 'status-dot';
+            if (dotClass) dot.classList.add(dotClass);
+        }
+
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', loadQuestions);
+
+        // Cleanup
+        window.addEventListener('beforeunload', () => {
+            synth.cancel();
+            recognition.stop();
+        });
+    </script>
+</body>
+</html>

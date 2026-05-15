@@ -11,7 +11,10 @@
     <nav class="navbar navbar-custom">
       <div class="container-compact">
         <a class="brand" href="/">AI Resume Screening</a>
-        <div class="ms-auto"><a class="btn btn-sm btn-outline-light" href="/">Home</a></div>
+        <div class="ms-auto d-flex gap-2">
+          <a class="btn btn-sm btn-outline-light" href="/">Home</a>
+          {% if session.get('user_id') %}<a class="btn btn-sm btn-outline-light" href="/logout">Logout</a>{% endif %}
+        </div>
       </div>
     </nav>
     <main class="container-compact py-5">
@@ -19,18 +22,28 @@
         <div class="col-lg-8 mx-auto">
           <div class="card-glass p-3">
             <h3 class="mb-3">Interview Questions</h3>
-            <form method="post">
+
+            {% if base_score is not none %}
+              <div class="alert alert-info">
+                Resume match score for <strong>{{ resume_name or 'candidate' }}</strong>: {{ base_score }}%
+              </div>
+            {% endif %}
+
+            <form id="answersForm" method="post">
+              <input type="hidden" id="baseScore" name="base_score" value="{{ base_score or '' }}">
               {% for q in questions %}
                 <div class="mb-3">
                   <label class="form-label">{{ q }}</label>
                   <textarea name="answers" class="form-control" rows="2"></textarea>
                 </div>
               {% endfor %}
-              <button class="btn btn-primary">Submit Answers</button>
+              <button class="btn btn-primary" type="submit">Submit Answers</button>
             </form>
+
           </div>
         </div>
       </div>
     </main>
+
   </body>
 </html>

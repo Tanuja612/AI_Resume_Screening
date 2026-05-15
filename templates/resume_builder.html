@@ -1,0 +1,763 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Create Resume - AI Resume Screening</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        * {
+            font-family: 'Times New Roman', Times, serif !important;
+        }
+
+        body {
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        .divider {
+            border-top: 2px solid rgba(255, 255, 255, 0.2);
+            margin: 2rem 0 1rem 0;
+        }
+
+        .form-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-section h5 {
+            color: #fff;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-section h5::before {
+            content: "";
+            display: inline-block;
+            width: 4px;
+            height: 25px;
+            background: #7c3aed;
+            margin-right: 0.75rem;
+            border-radius: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            color: #eef2f7;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: block;
+            font-size: 1rem;
+        }
+
+        .form-control, .form-select, textarea {
+            background: rgba(255, 255, 255, 0.08) !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            color: #fff !important;
+            border-radius: 6px;
+            font-family: 'Times New Roman', Times, serif !important;
+            padding: 0.75rem;
+        }
+
+        .form-control:focus, .form-select:focus, textarea:focus {
+            border-color: #7c3aed !important;
+            background: rgba(255, 255, 255, 0.12) !important;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1) !important;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .step-container {
+            display: none;
+        }
+
+        .step-container.active {
+            display: block;
+        }
+
+        .step-title {
+            font-size: 1.8rem;
+            color: #fff;
+            margin-bottom: 2rem;
+            font-weight: 700;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+
+        .btn-custom {
+            padding: 0.75rem 2rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-family: 'Times New Roman', Times, serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-next {
+            background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%);
+            border: none;
+            color: white;
+        }
+
+        .btn-next:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(124, 58, 237, 0.3);
+            color: white;
+        }
+
+        .btn-prev {
+            background: rgba(124, 58, 237, 0.2);
+            border: 1px solid rgba(124, 58, 237, 0.5);
+            color: #a78bfa;
+        }
+
+        .btn-prev:hover {
+            background: rgba(124, 58, 237, 0.3);
+            color: #c4b5fd;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border: none;
+            color: white;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+            color: white;
+        }
+
+        .entry-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .entry-item .remove-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(255, 0, 0, 0.2);
+            border: none;
+            color: #ff6b6b;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .entry-item .remove-btn:hover {
+            background: rgba(255, 0, 0, 0.4);
+        }
+
+        .add-more-btn {
+            background: rgba(124, 58, 237, 0.2);
+            border: 1px dashed rgba(124, 58, 237, 0.5);
+            color: #a78bfa;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        .add-more-btn:hover {
+            background: rgba(124, 58, 237, 0.3);
+            border-color: #7c3aed;
+            color: #c4b5fd;
+        }
+
+        .progress-bar-custom {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 3rem;
+            position: relative;
+            flex-wrap: wrap;
+        }
+
+        .progress-item {
+            text-align: center;
+            flex: 1;
+            min-width: 80px;
+        }
+
+        .progress-dot {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(124, 58, 237, 0.2);
+            border: 2px solid rgba(124, 58, 237, 0.5);
+            color: #a78bfa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin: 0 auto 0.5rem;
+        }
+
+        .progress-item.active .progress-dot {
+            background: #7c3aed;
+            border-color: #7c3aed;
+            color: white;
+            box-shadow: 0 0 20px rgba(124, 58, 237, 0.4);
+        }
+
+        .progress-item.completed .progress-dot {
+            background: #10b981;
+            border-color: #10b981;
+            color: white;
+        }
+
+        .progress-label {
+            font-size: 0.9rem;
+            color: #9aa4b2;
+        }
+
+        .progress-item.active .progress-label {
+            color: #7c3aed;
+            font-weight: 600;
+        }
+
+        .template-card {
+            border: 2px solid rgba(124, 58, 237, 0.2);
+            border-radius: 10px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+        }
+
+        .template-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .template-card.selected {
+            background: rgba(124, 58, 237, 0.1);
+            box-shadow: 0 0 20px rgba(124, 58, 237, 0.3);
+        }
+
+        .template-card[data-template="professional"] {
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+        .template-card[data-template="professional"]:hover,
+        .template-card[data-template="professional"].selected {
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .template-card[data-template="chronological"] {
+            border-color: rgba(34, 197, 94, 0.3);
+        }
+        .template-card[data-template="chronological"]:hover,
+        .template-card[data-template="chronological"].selected {
+            border-color: #22c55e;
+            background: rgba(34, 197, 94, 0.1);
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+        }
+
+        .template-card[data-template="functional"] {
+            border-color: rgba(249, 115, 22, 0.3);
+        }
+        .template-card[data-template="functional"]:hover,
+        .template-card[data-template="functional"].selected {
+            border-color: #f97316;
+            background: rgba(249, 115, 22, 0.1);
+            box-shadow: 0 0 20px rgba(249, 115, 22, 0.3);
+        }
+
+        .template-card[data-template="modern"] {
+            border-color: rgba(236, 72, 153, 0.3);
+        }
+        .template-card[data-template="modern"]:hover,
+        .template-card[data-template="modern"].selected {
+            border-color: #ec4899;
+            background: rgba(236, 72, 153, 0.1);
+            box-shadow: 0 0 20px rgba(236, 72, 153, 0.3);
+        }
+
+        .template-card h5 {
+            color: #fff;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .template-card p {
+            color: #9aa4b2;
+            margin: 0;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-custom">
+        <div class="container-compact">
+            <a class="brand" href="/">AI Resume Screening</a>
+            <div class="ms-auto d-flex gap-2">
+                <a class="btn btn-sm btn-outline-light" href="/">Home</a>
+                {% if session.get('user_id') %}<a class="btn btn-sm btn-outline-light" href="/logout">Logout</a>{% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <main class="container-compact py-5">
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+                <div class="card-glass p-4">
+                    <h2 class="mb-1">Create Your Professional Resume</h2>
+                    <p class="muted-small mb-4">Fill out each section step by step</p>
+
+                    <!-- Progress Bar -->
+                    <div class="progress-bar-custom">
+                        <div class="progress-item active" id="progress-1">
+                            <div class="progress-dot">1</div>
+                            <div class="progress-label">Template</div>
+                        </div>
+                        <div class="progress-item" id="progress-2">
+                            <div class="progress-dot">2</div>
+                            <div class="progress-label">Contact</div>
+                        </div>
+                        <div class="progress-item" id="progress-3">
+                            <div class="progress-dot">3</div>
+                            <div class="progress-label">Summary</div>
+                        </div>
+                        <div class="progress-item" id="progress-4">
+                            <div class="progress-dot">4</div>
+                            <div class="progress-label">Skills</div>
+                        </div>
+                        <div class="progress-item" id="progress-5">
+                            <div class="progress-dot">5</div>
+                            <div class="progress-label">Experience</div>
+                        </div>
+                        <div class="progress-item" id="progress-6">
+                            <div class="progress-dot">6</div>
+                            <div class="progress-label">Education</div>
+                        </div>
+                        <div class="progress-item" id="progress-7">
+                            <div class="progress-dot">7</div>
+                            <div class="progress-label">Projects</div>
+                        </div>
+                        <div class="progress-item" id="progress-8">
+                            <div class="progress-dot">8</div>
+                            <div class="progress-label">Save</div>
+                        </div>
+                    </div>
+
+                    <form id="resumeForm" method="post" action="/save_resume">
+                        <!-- STEP 1: Template Selection -->
+                        <div class="step-container active" id="step-1">
+                            <div class="step-title">📋 Choose Your Template</div>
+                            <div class="form-section">
+                                <h5>Select a Resume Template</h5>
+                                <p style="color: #9aa4b2; margin-bottom: 2rem;">Each template has a unique layout to showcase your skills</p>
+                                <div id="templates-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;"></div>
+                            </div>
+                            <input type="hidden" id="selectedTemplate" name="template" value="">
+                        </div>
+
+                        <!-- STEP 2: Contact Information -->
+                        <div class="step-container" id="step-2">
+                            <div class="step-title">📧 Contact Information</div>
+                            <div class="form-section">
+                                <h5>Your Contact Details</h5>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="fullName">Full Name *</label>
+                                            <input type="text" class="form-control" id="fullName" name="name" placeholder="John Doe" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="email">Email Address *</label>
+                                            <input type="email" class="form-control" id="email" name="email" placeholder="john@example.com" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="phone">Phone Number *</label>
+                                            <input type="tel" class="form-control" id="phone" name="phone" placeholder="(555) 123-4567" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="location">Location</label>
+                                            <input type="text" class="form-control" id="location" name="location" placeholder="City, Country">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="github">GitHub Profile</label>
+                                            <input type="url" class="form-control" id="github" name="github" placeholder="https://github.com/yourname">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="linkedin">LinkedIn Profile</label>
+                                            <input type="url" class="form-control" id="linkedin" name="linkedin" placeholder="https://linkedin.com/in/yourname">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="divider"></div>
+                            </div>
+                        </div>
+
+                        <!-- STEP 3: Professional Summary -->
+                        <div class="step-container" id="step-3">
+                            <div class="step-title">✨ Professional Summary</div>
+                            <div class="form-section">
+                                <h5>About You</h5>
+                                <div class="form-group">
+                                    <label for="summary">Professional Summary</label>
+                                    <textarea class="form-control" id="summary" name="summary" placeholder="Brief overview of your professional background and key achievements..."></textarea>
+                                    <small class="text-muted">2-3 sentences about your professional background</small>
+                                </div>
+                                <div class="divider"></div>
+                            </div>
+                        </div>
+
+                        <!-- STEP 4: Skills -->
+                        <div class="step-container" id="step-4">
+                            <div class="step-title">🎯 Skills</div>
+                            <div class="form-section">
+                                <h5>Your Skills</h5>
+                                <div class="form-group">
+                                    <label for="skills">Skills (comma-separated or one per line)</label>
+                                    <textarea class="form-control" id="skills" name="skills" placeholder="Python, Data Analysis, SQL&#10;Project Management&#10;Communication..."></textarea>
+                                </div>
+                                <div class="divider"></div>
+                            </div>
+                        </div>
+
+                        <!-- STEP 5: Work Experience -->
+                        <div class="step-container" id="step-5">
+                            <div class="step-title">💼 Work Experience</div>
+                            <div class="form-section">
+                                <h5>Professional Experience</h5>
+                                <div id="experienceContainer"></div>
+                                <button type="button" class="add-more-btn" onclick="addExperienceEntry()">+ Add Experience</button>
+                            </div>
+                        </div>
+
+                        <!-- STEP 6: Education -->
+                        <div class="step-container" id="step-6">
+                            <div class="step-title">🎓 Education</div>
+                            <div class="form-section">
+                                <h5>Educational Background</h5>
+                                <div id="educationContainer"></div>
+                                <button type="button" class="add-more-btn" onclick="addEducationEntry()">+ Add Education</button>
+                                <div class="divider"></div>
+                            </div>
+                        </div>
+
+                        <!-- STEP 7: Projects -->
+                        <div class="step-container" id="step-7">
+                            <div class="step-title">🚀 Projects</div>
+                            <div class="form-section">
+                                <h5>Your Projects</h5>
+                                <div id="projectsContainer"></div>
+                                <button type="button" class="add-more-btn" onclick="addProjectEntry()">+ Add Project</button>
+                                <div class="divider"></div>
+                                <div class="form-group">
+                                    <label for="certifications">Certifications & Awards</label>
+                                    <textarea class="form-control" id="certifications" name="certifications" placeholder="Certification Name | Issuing Organization | Year&#10;Award Name | Organization | Year..."></textarea>
+                                </div>
+                                <div class="divider"></div>
+                            </div>
+                        </div>
+
+                        <!-- STEP 8: Review & Save -->
+                        <div class="step-container" id="step-8">
+                            <div class="step-title">💾 Save Your Resume</div>
+                            <div class="form-section">
+                                <h5>Review & Save</h5>
+                                <p style="color: #9aa4b2; margin-bottom: 1.5rem;">Click the button below to save your resume and proceed to preview it</p>
+                                <button type="submit" class="btn-custom btn-save" style="width: 100%; padding: 1rem;">📥 Save Resume</button>
+                            </div>
+                        </div>
+
+                        <!-- Navigation Buttons -->
+                        <div class="button-group">
+                            <button type="button" class="btn-custom btn-prev" id="prevBtn" onclick="previousStep()" style="display:none;">← Previous</button>
+                            <button type="button" class="btn-custom btn-next" id="nextBtn" onclick="nextStep()">Next →</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const templates = [
+            { id: 'professional', name: 'Professional Resume', description: 'Classic professional format - ATS friendly' },
+            { id: 'chronological', name: 'Chronological Resume', description: 'Focus on work history and progression' },
+            { id: 'functional', name: 'Functional Resume', description: 'Emphasize skills and achievements' },
+            { id: 'modern', name: 'Modern ATS Resume', description: 'Clean, simple format optimized for ATS' }
+        ];
+
+        let currentStep = 1;
+        const totalSteps = 8;
+        let selectedTemplate = null;
+
+        function initializeTemplates() {
+            const container = document.getElementById('templates-container');
+            container.innerHTML = templates.map(t => `
+                <div class="template-card" onclick="selectTemplate('${t.id}')" data-template="${t.id}">
+                    <h5>${t.name}</h5>
+                    <p>${t.description}</p>
+                </div>
+            `).join('');
+        }
+
+        function selectTemplate(templateId) {
+            selectedTemplate = templateId;
+            document.getElementById('selectedTemplate').value = templateId;
+            
+            document.querySelectorAll('.template-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            const selected = document.querySelector(`[data-template="${templateId}"]`);
+            selected.classList.add('selected');
+        }
+
+        function addExperienceEntry() {
+            const container = document.getElementById('experienceContainer');
+            const entry = document.createElement('div');
+            entry.className = 'entry-item';
+            entry.innerHTML = `
+                <button type="button" class="remove-btn" onclick="this.parentElement.remove()">×</button>
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control mb-2" name="job_title[]" placeholder="Job Title">
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" class="form-control mb-2" name="company[]" placeholder="Company Name">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control mb-2" name="job_duration[]" placeholder="Jan 2020 - Dec 2021">
+                    </div>
+                </div>
+                <textarea class="form-control" name="job_description[]" placeholder="Key responsibilities and achievements..."></textarea>
+            `;
+            container.appendChild(entry);
+        }
+
+        function addEducationEntry() {
+            const container = document.getElementById('educationContainer');
+            const entry = document.createElement('div');
+            entry.className = 'entry-item';
+            entry.innerHTML = `
+                <button type="button" class="remove-btn" onclick="this.parentElement.remove()">×</button>
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control mb-2" name="degree[]" placeholder="Degree (e.g., Bachelor of Science)">
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" class="form-control mb-2" name="field[]" placeholder="Field of Study">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control mb-2" name="university[]" placeholder="University/Institution">
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" class="form-control mb-2" name="graduation_year[]" placeholder="2020">
+                    </div>
+                </div>
+            `;
+            container.appendChild(entry);
+        }
+
+        function addProjectEntry() {
+            const container = document.getElementById('projectsContainer');
+            const entry = document.createElement('div');
+            entry.className = 'entry-item';
+            entry.innerHTML = `
+                <button type="button" class="remove-btn" onclick="this.parentElement.remove()">×</button>
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control mb-2" name="project_title[]" placeholder="Project Title">
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" class="form-control mb-2" name="project_duration[]" placeholder="Jan 2020 - Dec 2021">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control mb-2" name="project_technologies[]" placeholder="Technologies used (e.g., Python, React, AWS)">
+                </div>
+                <textarea class="form-control" name="project_description[]" placeholder="Project description and your role..."></textarea>
+            `;
+            container.appendChild(entry);
+        }
+
+        function nextStep() {
+            if (currentStep === 1 && !selectedTemplate) {
+                alert('Please select a resume template');
+                return;
+            }
+            
+            if (currentStep < totalSteps) {
+                currentStep++;
+                updateStepDisplay();
+            }
+        }
+
+        function previousStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateStepDisplay();
+            }
+        }
+
+        function updateStepDisplay() {
+            // Hide all steps
+            for (let i = 1; i <= totalSteps; i++) {
+                document.getElementById(`step-${i}`).classList.remove('active');
+                document.getElementById(`progress-${i}`).classList.remove('active', 'completed');
+            }
+            
+            // Show current step
+            document.getElementById(`step-${currentStep}`).classList.add('active');
+            document.getElementById(`progress-${currentStep}`).classList.add('active');
+            
+            // Mark previous as completed
+            for (let i = 1; i < currentStep; i++) {
+                document.getElementById(`progress-${i}`).classList.add('completed');
+            }
+            
+            // Update buttons
+            document.getElementById('prevBtn').style.display = currentStep > 1 ? 'block' : 'none';
+            document.getElementById('nextBtn').style.display = currentStep < totalSteps ? 'block' : 'none';
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        document.getElementById('resumeForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            // Get all array fields
+            const jobTitles = formData.getAll('job_title[]');
+            const companies = formData.getAll('company[]');
+            const durations = formData.getAll('job_duration[]');
+            const descriptions = formData.getAll('job_description[]');
+            
+            const degrees = formData.getAll('degree[]');
+            const fields = formData.getAll('field[]');
+            const universities = formData.getAll('university[]');
+            const years = formData.getAll('graduation_year[]');
+            
+            const projectTitles = formData.getAll('project_title[]');
+            const projectDurations = formData.getAll('project_duration[]');
+            const projectTechs = formData.getAll('project_technologies[]');
+            const projectDescs = formData.getAll('project_description[]');
+            
+            // Build experience string
+            let experience = '';
+            for (let i = 0; i < jobTitles.length; i++) {
+                if (jobTitles[i]) {
+                    experience += `${jobTitles[i]} | ${companies[i] || ''} | ${durations[i] || ''}\n${descriptions[i] || ''}`;
+                    if (i < jobTitles.length - 1) experience += '\n\n';
+                }
+            }
+            
+            // Build education string
+            let education = '';
+            for (let i = 0; i < degrees.length; i++) {
+                if (degrees[i]) {
+                    education += `${degrees[i]} in ${fields[i] || ''}\n${universities[i] || ''} | ${years[i] || ''}`;
+                    if (i < degrees.length - 1) education += '\n\n';
+                }
+            }
+            
+            // Build projects string
+            let projects = '';
+            for (let i = 0; i < projectTitles.length; i++) {
+                if (projectTitles[i]) {
+                    projects += `${projectTitles[i]} | ${projectDurations[i] || ''}\nTechnologies: ${projectTechs[i] || ''}\n${projectDescs[i] || ''}`;
+                    if (i < projectTitles.length - 1) projects += '\n\n';
+                }
+            }
+            
+            // Build data object
+            const data = {
+                template: formData.get('template'),
+                name: formData.get('name'),
+                email: formData.get('email'),
+                phone: formData.get('phone'),
+                location: formData.get('location'),
+                github: formData.get('github'),
+                linkedin: formData.get('linkedin'),
+                summary: formData.get('summary'),
+                skills: formData.get('skills'),
+                experience: experience,
+                education: education,
+                projects: projects,
+                certifications: formData.get('certifications'),
+                languages: formData.get('languages')
+            };
+            
+            try {
+                const response = await fetch('/save_resume', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    window.location.href = `/resume_created/${result.filename}`;
+                } else {
+                    alert('Error creating resume');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error saving resume');
+            }
+        });
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeTemplates();
+            addExperienceEntry();
+            addEducationEntry();
+        });
+    </script>
+</body>
+</html>

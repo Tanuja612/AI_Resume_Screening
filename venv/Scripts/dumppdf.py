@@ -1,4 +1,4 @@
-#!C:\Users\nandi\Tanu\AI_Resume_Screening\venv\Scripts\python.exe
+#!C:\Users\Admin\AI_Resume_Screening\venv\Scripts\python.exe
 """Extract pdf structure in XML format"""
 
 import logging

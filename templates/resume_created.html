@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Resume Created Successfully</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+      .success-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .success-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        padding: 40px;
+        max-width: 700px;
+        width: 100%;
+      }
+      .success-icon {
+        font-size: 4rem;
+        text-align: center;
+        margin-bottom: 20px;
+        color: #28a745;
+      }
+      .success-title {
+        text-align: center;
+        color: #333;
+        margin-bottom: 10px;
+      }
+      .success-subtitle {
+        text-align: center;
+        color: #666;
+        margin-bottom: 30px;
+      }
+      .resume-preview {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 30px;
+        max-height: 400px;
+        overflow-y: auto;
+        font-family: 'Courier New', monospace;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        font-size: 0.85rem;
+        line-height: 1.5;
+      }
+      .action-buttons {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+      .action-buttons .btn {
+        flex: 1;
+        min-width: 150px;
+      }
+      .info-box {
+        background: #e7f3ff;
+        border-left: 4px solid #2196F3;
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+      }
+      .info-box p {
+        margin: 0;
+        color: #1565c0;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-custom">
+      <div class="container-compact">
+        <a class="brand" href="/">AI Resume Screening</a>
+        <div class="ms-auto d-flex gap-2">
+          <a class="btn btn-sm btn-outline-light" href="/">Home</a>
+          {% if session.get('user_id') %}<a class="btn btn-sm btn-outline-light" href="/logout">Logout</a>{% endif %}
+        </div>
+      </div>
+    </nav>
+
+    <div class="success-container">
+      <div class="success-card">
+        <div class="success-icon">✅</div>
+        <h2 class="success-title">Resume Created Successfully!</h2>
+        <p class="success-subtitle">Your resume is ready. You can download it or continue with ATS compatibility check.</p>
+
+        <div class="info-box">
+          <p><strong>📄 Filename:</strong> {{ filename }}</p>
+        </div>
+
+        <div class="resume-preview" id="resumePreview">
+          <div class="text-center text-muted">
+            <p>Loading resume preview...</p>
+          </div>
+        </div>
+
+        <div class="action-buttons">
+          <a href="{{ url_for('download_created', filename=filename) }}" class="btn btn-success" title="Download your created resume">
+            ⬇️ Download Resume
+          </a>
+          <a href="{{ url_for('ats_check') }}" class="btn btn-primary" title="Check ATS compatibility of your resume">
+            🔍 Check ATS Compatibility
+          </a>
+        </div>
+
+        <hr>
+        <p class="text-muted small text-center mb-0">
+          💡 <strong>Tip:</strong> Download your resume and store it safely. You can also check ATS compatibility to ensure it's optimized for applicant tracking systems.
+        </p>
+      </div>
+    </div>
+
+    <script>
+      // Fetch and display resume preview
+      async function loadResumePreview() {
+        try {
+          const response = await fetch('/get_resume_content/{{ filename }}');
+          if (response.ok) {
+            const data = await response.json();
+            document.getElementById('resumePreview').textContent = data.content;
+          } else {
+            document.getElementById('resumePreview').innerHTML = '<p class="text-muted">Unable to load preview. Your resume has been saved successfully.</p>';
+          }
+        } catch (error) {
+          console.error('Error loading preview:', error);
+          document.getElementById('resumePreview').innerHTML = '<p class="text-muted">Preview unavailable, but your resume has been saved.</p>';
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', loadResumePreview);
+    </script>
+  </body>
+</html>
